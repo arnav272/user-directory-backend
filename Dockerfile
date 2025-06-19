@@ -13,5 +13,5 @@ RUN ./mvnw clean package -DskipTests
 # Expose the port your app runs on
 EXPOSE 8080
 
-# Run the built JAR (assuming your app creates one jar in /target)
-CMD ["java", "-jar", "target/backend-0.0.1-SNAPSHOT.jar"]
+# Run the built JAR (uses shell to dynamically find the jar)
+CMD sh -c 'java -jar $(find target -name "*.jar" | head -n 1)'
