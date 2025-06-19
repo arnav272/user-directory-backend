@@ -1,17 +1,14 @@
-# Use OpenJDK base image
+# Use OpenJDK 17 as base
 FROM openjdk:17-jdk-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy everything
-COPY . .
+# Copy only the target jar and not source code
+COPY target/backend-0.0.1-SNAPSHOT.jar app.jar
 
-# Build app
-RUN ./mvnw clean package -DskipTests
-
-# Expose Spring Boot default port
+# Expose port
 EXPOSE 8080
 
-# Run the Spring Boot fat jar using Boot loader
-CMD ["java", "-jar", "target/backend-0.0.1-SNAPSHOT.jar"]
+# Run jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
