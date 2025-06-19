@@ -4,11 +4,14 @@ FROM openjdk:17-jdk-slim
 # Set working directory
 WORKDIR /app
 
-# Copy files
+# Copy everything
 COPY . .
 
-# Build application
-RUN ./mvnw package -DskipTests
+# Build the application
+RUN ./mvnw clean package -DskipTests
 
-# Run application
-CMD ["java", "-jar", "$(find target -name '*.jar' | head -n 1)"]
+# Expose the port your app runs on
+EXPOSE 8080
+
+# Run the built JAR (assuming your app creates one jar in /target)
+CMD ["java", "-jar", "target/backend-0.0.1-SNAPSHOT.jar"]
