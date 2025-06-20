@@ -15,11 +15,15 @@ public class UserController {
     private UserRepository userRepository;
 
     // Get all users
-   @GetMapping("/api/users/search")
-public List<User> searchUsers(@RequestParam String name) {
-    return userRepository.findByNameContainingIgnoreCase(name);
+ @GetMapping("/api/users/search")
+public ResponseEntity<User> searchUser(@RequestParam String name) {
+    List<User> users = userRepository.findByNameContainingIgnoreCase(name);
+    if (!users.isEmpty()) {
+        return ResponseEntity.ok(users.get(0)); // return first match
+    } else {
+        return ResponseEntity.notFound().build();
+    }
 }
-
     @PostMapping("/api/users")
 public ResponseEntity<?> addUser(@RequestBody User user) {
     String name = user.getName() != null ? user.getName().trim() : "";
