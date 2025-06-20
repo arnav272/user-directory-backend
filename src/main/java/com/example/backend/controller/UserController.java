@@ -14,35 +14,38 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    // Get all users
- @GetMapping("/api/users/search")
-public ResponseEntity<User> searchUser(@RequestParam String name) {
-    List<User> users = userRepository.findByNameContainingIgnoreCase(name);
-    if (!users.isEmpty()) {
-        return ResponseEntity.ok(users.get(0)); // return first match
-    } else {
-        return ResponseEntity.notFound().build();
+    // ✅ GET all users — this was missing!
+    @GetMapping("/api/users")
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
-}
+
+    // ✅ Search users by name
+    @GetMapping("/api/users/search")
+    public ResponseEntity<List<User>> searchUsers(@RequestParam String name) {
+        List<User> users = userRepository.findByNameContainingIgnoreCase(name);
+        return ResponseEntity.ok(users);
+    }
+
+    // ✅ Add user with validation
     @PostMapping("/api/users")
-public ResponseEntity<?> addUser(@RequestBody User user) {
-    String name = user.getName() != null ? user.getName().trim() : "";
-    String email = user.getEmail() != null ? user.getEmail().trim() : "";
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        String name = user.getName() != null ? user.getName().trim() : "";
+        String email = user.getEmail() != null ? user.getEmail().trim() : "";
 
-    // Backend-side validation
-    if (name.isEmpty() || email.isEmpty() || !email.contains("@")) {
-        return ResponseEntity.badRequest().body("Invalid name or email. Email must include '@'");
+        if (name.isEmpty() || email.isEmpty() || !email.contains("@")) {
+            return ResponseEntity.badRequest().body("Invalid name or email. Email must include '@'");
+        }
+
+        try {
+            User savedUser = userRepository.save(user);
+            return ResponseEntity.ok(savedUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error saving user.");
+        }
     }
 
-    try {
-        User savedUser = userRepository.save(user);
-        return ResponseEntity.ok(savedUser);
-    } catch (Exception e) {
-        return ResponseEntity.status(500).body("Error saving user.");
-    }
-}
-
-    // Update user by ID
+    // ✅ Update user by ID
     @PutMapping("/api/users/{id}")
     public User updateUser(@PathVariable Long id, @RequestBody User userData) {
         User user = userRepository.findById(id).orElse(null);
@@ -54,7 +57,7 @@ public ResponseEntity<?> addUser(@RequestBody User user) {
         return null;
     }
 
-    // Delete user by ID
+    // ✅ Delete user by ID
     @DeleteMapping("/api/users/{id}")
     public void deleteUser(@PathVariable Long id) {
         userRepository.deleteById(id);
