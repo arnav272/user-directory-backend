@@ -15,10 +15,10 @@ public class UserController {
     private UserRepository userRepository;
 
     // Get all users
-    @GetMapping("/api/users")
-    public List<User> getUsers() {
-        return userRepository.findAll();
-    }
+   @GetMapping("/api/users/search")
+public List<User> searchUsers(@RequestParam String name) {
+    return userRepository.findByNameContainingIgnoreCase(name);
+}
 
     @PostMapping("/api/users")
 public ResponseEntity<?> addUser(@RequestBody User user) {
